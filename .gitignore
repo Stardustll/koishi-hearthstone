@@ -17,7 +17,7 @@ tsconfig.tsbuildinfo
 *.njsproj
 *.sln
 
-*,db
+*.db
 *.db-shm
 *.db-wal
 data/hearthstone_cards.db
