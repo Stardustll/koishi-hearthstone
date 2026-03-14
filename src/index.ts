@@ -13,12 +13,23 @@ export function apply(ctx: Context, config: Config) {
 
   ctx.command('卡牌查询 <message>')
     .action((_, message) => {
-      return searchCard(message);
+      const result = searchCard(message);
+      if(result){
+        return result;
+      }
+      else{
+        return '未找到相关卡牌';
+      }
       // return `<image url="data:image/png;base64,${searchCard(message)}"/>`
     })
   
   ctx.command('id查询卡牌 <message>').alias('id查询')
     .action((_, message) => {
-      return `<image url="data:image/png;base64,${searchCard_img(message)}"/>`
+      const result = searchCard_id(message);
+      if(result){
+      return `<image url="data:image/png;base64,${result}"/>`}
+      else{
+        return '未找到相关卡牌';
+      }
     })
 }
