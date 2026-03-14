@@ -16,3 +16,7 @@ tsconfig.tsbuildinfo
 *.ntvs*
 *.njsproj
 *.sln
+
+*,db
+*.db-shm
+*.db-wal
