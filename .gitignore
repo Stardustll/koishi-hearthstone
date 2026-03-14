@@ -20,3 +20,4 @@ tsconfig.tsbuildinfo
 *,db
 *.db-shm
 *.db-wal
+data/hearthstone_cards.db
