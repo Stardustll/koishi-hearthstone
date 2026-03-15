@@ -1,18 +1,18 @@
 {
   "name": "koishi-plugin-hearthstone",
   "description": "炉石卡牌插件",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
     "lib",
-    "dist",
-    "data"
+    "dist"
   ],
   "license": "MIT",
+  "homepage": "https://github.com/Stardustll/koishi-hearthstone",
   "scripts": {},
   "keywords": [
-    "chatbot",
+    "hearthstone",
     "koishi",
     "plugin"
   ],
@@ -20,10 +20,9 @@
     "koishi": "^4.18.7"
   },
   "dependencies": {
-    "@types/express": "^5.0.6",
-    "@types/sqlite3": "^3.1.11",
-    "better-sqlite3": "^12.8.0",
-    "express": "^5.2.1",
-    "sqlite3": "^6.0.1"
+    "better-sqlite3": "^12.8.0"
+  },
+  "koishi":{
+    "preview":true
   }
 }
