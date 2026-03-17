@@ -159,27 +159,31 @@ export function searchCard_img(value) {
     return Buffer.from(row.image_normal_data).toString('base64');
 }
 
-export function searchCard(value) {
+export interface CardSearchResult {
+    id: number;
+    name: string;
+    collectible: boolean;
+    image_normal_data: Buffer | null;
+}
+
+export function searchCard(value: string): CardSearchResult[] | null {
     const rows = db.prepare(
-        `SELECT a.card_id as id, a.name, b.tag_value
-         FROM card_names a
-         JOIN card_tags b ON a.card_id = b.card_id
-         WHERE a.name LIKE ? AND b.tag_id = 321`
-    ).all(`%${value}%`);
+        `SELECT c.id, cn.name, ct.tag_value as collectible, c.image_normal_data
+         FROM cards c
+         JOIN card_names cn ON cn.card_id = c.id
+         LEFT JOIN card_tags ct ON ct.card_id = c.id AND ct.tag_id = 321
+         WHERE cn.name LIKE ?
+         GROUP BY c.id`
+    ).all(`%${value}%`) as any[];
 
     if (!rows.length) return null;
 
-    const maxShow = 999;
-    const header = `📋 找到 ${rows.length} 张相关卡牌`;
-    const divider = '━'.repeat(18);
-    const cards = rows.slice(0, maxShow).map((r, i) =>
-        `${i + 1}. 「${r.name}」\n   ID: ${r.id}\n   可收藏: ${r.tag_value === 1 ? '✅ 是' : '❌ 否'}`
-    ).join('\n' + '─'.repeat(18) + '\n');
-    const footer = rows.length > maxShow
-        ? `\n${divider}\n⚠ 结果过多，仅显示前 ${maxShow} 条（共 ${rows.length} 条）`
-        : '';
-
-    return `${header}\n${divider}\n${cards}${footer}`;
+    return rows.map(r => ({
+        id: r.id,
+        name: r.name,
+        collectible: r.collectible === 1,
+        image_normal_data: r.image_normal_data ? Buffer.from(r.image_normal_data) : null,
+    }));
 }
 
 // 辅助函数

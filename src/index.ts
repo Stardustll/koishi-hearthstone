@@ -1,4 +1,4 @@
-import { Context, Schema } from 'koishi'
+import { Context, Schema, h } from 'koishi'
 import { searchCard_id, searchCard, storeCardFromApi, storeCardsFromApi, getCardCount, getCardImagePath, updateCardImage } from './db'
 import { searchCardOnline, downloadCardImage, fetchCardPage } from './api'
 
@@ -14,18 +14,49 @@ let isDownloading = false
 export function apply(ctx: Context, config: Config) {
 
   ctx.command('卡牌查询 <message>')
-    .action(async (_, message) => {
-      const localResult = searchCard(message);
-      if (localResult) return localResult;
+    .action(async (argv, message) => {
+      let results = searchCard(message);
 
-      const onlineCards = await searchCardOnline(message);
-      if (!onlineCards?.length) return '未找到相关卡牌';
-
-      for (const card of onlineCards) {
-        storeCardFromApi(card);
+      if (!results) {
+        const onlineCards = await searchCardOnline(message);
+        if (!onlineCards?.length) return '未找到相关卡牌';
+        for (const card of onlineCards) {
+          storeCardFromApi(card);
+        }
+        results = searchCard(message);
       }
 
-      return searchCard(message) ?? '未找到相关卡牌';
+      if (!results?.length) return '未找到相关卡牌';
+
+      // 每张卡牌构建一条子消息
+      const messages = await Promise.all(results.map(async (card) => {
+        let imageData = card.image_normal_data;
+
+        if (!imageData) {
+          const imagePath = getCardImagePath(card.id);
+          if (imagePath) {
+            const buf = await downloadCardImage(imagePath);
+            if (buf) {
+              updateCardImage(card.id, buf);
+              imageData = buf;
+            }
+          }
+        }
+
+        const children: any[] = [
+          `【${card.name}】\nID: ${card.id}\n可收藏: ${card.collectible ? '是' : '否'}`,
+        ];
+
+        if (imageData) {
+          children.push('\n');
+          children.push(h('image', { url: `data:image/png;base64,${imageData.toString('base64')}` }));
+        }
+
+        return h('message', {}, ...children);
+      }));
+
+      await argv.session.send(h('message', { forward: true }, ...messages));
+      return;
     })
 
   ctx.command('id查询卡牌 <message>').alias('id查询')
