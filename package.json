@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-hearthstone",
   "description": "炉石卡牌插件",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -22,7 +22,7 @@
   "dependencies": {
     "better-sqlite3": "^12.8.0"
   },
-  "koishi":{
-    "preview":true
+  "koishi": {
+    "preview": true
   }
 }
