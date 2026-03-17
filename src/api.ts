@@ -8,7 +8,7 @@ const API_URL = 'https://fbigame.com/card/search'
 const PAGE_URL = 'https://fbigame.com/card'
 const OSS_BASE = 'https://fbigame.oss-cn-beijing.aliyuncs.com/'
 
-const agent = new https.Agent({ rejectUnauthorized: false })
+const agent = new https.Agent()
 
 interface Session {
   csrf: string
